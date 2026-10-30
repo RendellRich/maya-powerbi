@@ -1,0 +1,506 @@
+/// All report measures.
+table _Measures
+	lineageTag: 1b55bab9-b9f1-5c4b-96e1-c56920359740
+
+	/// Actual PACE demand, MWh.
+	measure 'Demand Actual' = SUM ( 'Fact Hourly'[Demand Actual (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 39fb6b85-67ca-57d4-a653-f5cc5ead370e
+
+	/// Maya day-ahead demand forecast (GBM and LSTM blend), MWh.
+	measure 'Demand Maya Forecast' = SUM ( 'Fact Hourly'[Demand Maya Forecast (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 8b6e603f-793f-5de1-a23a-2e0002b3626b
+
+	/// PACE's own published day-ahead demand forecast, MWh.
+	measure 'Demand PACE Forecast' = SUM ( 'Fact Hourly'[Demand PACE Forecast (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 5a6b7048-38e5-5d88-9293-4b78e6e7387c
+
+	/// Milford-area renewable output (modeled, calibrated to EIA-923), MWh.
+	measure 'Renewable Actual' = SUM ( 'Fact Hourly'[Renewable Actual (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 00ee3a86-78e9-574b-ad24-3cd76526d199
+
+	measure 'Renewable Maya Forecast' = SUM ( 'Fact Hourly'[Renewable Maya Forecast (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 4a032719-349d-5e80-be9d-35b31eef500e
+
+	/// Baseline: same hour yesterday.
+	measure 'Renewable Persistence' = SUM ( 'Fact Hourly'[Renewable Persistence (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 8cdcb59b-dfad-5ad7-9816-fd3eaa9897c8
+
+	/// Demand minus Milford-area renewable output, MWh.
+	measure 'Net Load Actual' = SUM ( 'Fact Hourly'[Net Load Actual (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 1b8aa244-3309-5e25-9557-7044aefdc8cb
+
+	measure 'Net Load Maya Forecast' = SUM ( 'Fact Hourly'[Net Load Maya Forecast (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 3c8ce9de-90a7-555c-9ab6-8665003ac718
+
+	/// PACE forecast minus persistence.
+	measure 'Net Load Baseline' = SUM ( 'Fact Hourly'[Net Load Baseline (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 2c3b930a-7574-5350-901d-699984770cd2
+
+	measure 'Solar Actual' = SUM ( 'Fact Hourly'[Solar Actual (MWh)] )
+		formatString: #,0
+		displayFolder: 1 Totals
+		lineageTag: 03b2b2df-f317-5498-8062-0a8c66b89a60
+
+	/// Daily total, shown only when every hour of the day has a value.
+	measure 'Demand Actual (Daily)' =
+			VAR _rows = COUNTROWS ( 'Fact Hourly' )
+			VAR _vals = COUNT ( 'Fact Hourly'[Demand Actual (MWh)] )
+			RETURN IF ( _rows >= 23 && _vals = _rows, [Demand Actual] )
+		formatString: #,0
+		displayFolder: 2 Daily totals
+		lineageTag: 09f153a4-72ff-585c-8990-a2ecff58fed5
+
+	/// Daily total, shown only when every hour of the day has a value.
+	measure 'Demand Maya Forecast (Daily)' =
+			VAR _rows = COUNTROWS ( 'Fact Hourly' )
+			VAR _vals = COUNT ( 'Fact Hourly'[Demand Maya Forecast (MWh)] )
+			RETURN IF ( _rows >= 23 && _vals = _rows, [Demand Maya Forecast] )
+		formatString: #,0
+		displayFolder: 2 Daily totals
+		lineageTag: 19467774-4888-5dc8-aeb1-ddd6357a1b3e
+
+	/// Daily total, shown only when every hour of the day has a value.
+	measure 'Demand PACE Forecast (Daily)' =
+			VAR _rows = COUNTROWS ( 'Fact Hourly' )
+			VAR _vals = COUNT ( 'Fact Hourly'[Demand PACE Forecast (MWh)] )
+			RETURN IF ( _rows >= 23 && _vals = _rows, [Demand PACE Forecast] )
+		formatString: #,0
+		displayFolder: 2 Daily totals
+		lineageTag: a06ed19c-86a4-5ff5-9ee7-cb0a024784a5
+
+	/// Mean absolute error of Maya's demand forecast, MWh per hour, over hours where actual, Maya and PACE all exist. Rounded to 2 decimals, as in the pipeline.
+	measure 'Demand MAE Maya' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN ROUND ( AVERAGEX ( _t, ABS ( 'Fact Hourly'[Demand Maya Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] ) ), 2 )
+		formatString: #,0.0
+		displayFolder: 3 Accuracy
+		lineageTag: 4bde9d86-421f-5def-a317-9ce605f926db
+
+	/// Rounded to 2 decimals, as in the pipeline.
+	measure 'Demand MAE PACE' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN ROUND ( AVERAGEX ( _t, ABS ( 'Fact Hourly'[Demand PACE Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] ) ), 2 )
+		formatString: #,0.0
+		displayFolder: 3 Accuracy
+		lineageTag: 30a355ec-47ff-5dd6-a202-e41c6d44d861
+
+	measure 'Demand MAE Improvement %' = DIVIDE ( [Demand MAE PACE] - [Demand MAE Maya], [Demand MAE PACE] )
+		formatString: 0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 1c117a7d-def8-5066-8561-c54edc22b191
+
+	measure 'Demand MAPE' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN AVERAGEX ( _t, DIVIDE ( ABS ( 'Fact Hourly'[Demand Maya Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] ), MAX ( 'Fact Hourly'[Demand Actual (MWh)], 1 ) ) )
+		formatString: 0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 215e6228-2a77-5ef3-bc7c-5124ed9e7a9d
+
+	measure 'Demand Hours Scored' = COUNTROWS ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) ) )
+		formatString: #,0
+		displayFolder: 3 Accuracy
+		lineageTag: 42b54d89-0071-57c4-bda0-932ed7ae7d45
+
+	/// Rounded to 2 decimals, as in the pipeline.
+	measure 'Renewable MAE Maya' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Renewable Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Renewable Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Renewable Persistence (MWh)] ) )
+			RETURN ROUND ( AVERAGEX ( _t, ABS ( 'Fact Hourly'[Renewable Maya Forecast (MWh)] - 'Fact Hourly'[Renewable Actual (MWh)] ) ), 2 )
+		formatString: #,0.0
+		displayFolder: 3 Accuracy
+		lineageTag: cac9d0fa-732b-5871-9674-5ada095699cb
+
+	/// Rounded to 2 decimals, as in the pipeline.
+	measure 'Renewable MAE Persistence' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Renewable Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Renewable Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Renewable Persistence (MWh)] ) )
+			RETURN ROUND ( AVERAGEX ( _t, ABS ( 'Fact Hourly'[Renewable Persistence (MWh)] - 'Fact Hourly'[Renewable Actual (MWh)] ) ), 2 )
+		formatString: #,0.0
+		displayFolder: 3 Accuracy
+		lineageTag: ffe4d02e-cc0c-5522-8ecb-46ba63371593
+
+	measure 'Renewable MAE Improvement %' = DIVIDE ( [Renewable MAE Persistence] - [Renewable MAE Maya], [Renewable MAE Persistence] )
+		formatString: 0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 8203ec0f-12db-5b38-bb1b-fd52eb258334
+
+	/// Rounded to 2 decimals, as in the pipeline.
+	measure 'Net Load MAE Maya' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Net Load Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Net Load Baseline (MWh)] ) )
+			RETURN ROUND ( AVERAGEX ( _t, ABS ( 'Fact Hourly'[Net Load Maya Forecast (MWh)] - 'Fact Hourly'[Net Load Actual (MWh)] ) ), 2 )
+		formatString: #,0.0
+		displayFolder: 3 Accuracy
+		lineageTag: 4db59302-84a7-50d7-bc7d-0a5825c31523
+
+	/// Rounded to 2 decimals, as in the pipeline.
+	measure 'Net Load MAE Baseline' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Net Load Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Net Load Baseline (MWh)] ) )
+			RETURN ROUND ( AVERAGEX ( _t, ABS ( 'Fact Hourly'[Net Load Baseline (MWh)] - 'Fact Hourly'[Net Load Actual (MWh)] ) ), 2 )
+		formatString: #,0.0
+		displayFolder: 3 Accuracy
+		lineageTag: e2220c0b-54b2-5212-a405-fa5d2d09be43
+
+	measure 'Net Load MAE Improvement %' = DIVIDE ( [Net Load MAE Baseline] - [Net Load MAE Maya], [Net Load MAE Baseline] )
+		formatString: 0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: ce94e5f7-5657-5108-b5ea-61ed49b5e364
+
+	measure 'Demand KPI Label' = FORMAT ( [Demand MAE Improvement %], "0.0%" ) & " better than PACE (" & FORMAT ( [Demand MAE PACE], "#,0.0" ) & " MWh)"
+		displayFolder: 3 Accuracy
+		lineageTag: dc3a9a53-2aed-53f9-b028-183b0bb2da78
+
+	measure 'Renewable KPI Label' = FORMAT ( [Renewable MAE Improvement %], "0.0%" ) & " better than persistence (" & FORMAT ( [Renewable MAE Persistence], "#,0.0" ) & " MWh)"
+		displayFolder: 3 Accuracy
+		lineageTag: da193007-e570-53c7-9286-d3291049178a
+
+	measure 'Net Load KPI Label' = FORMAT ( [Net Load MAE Improvement %], "0.0%" ) & " better than baseline (" & FORMAT ( [Net Load MAE Baseline], "#,0.0" ) & " MWh)"
+		displayFolder: 3 Accuracy
+		lineageTag: d85d0e07-d9a6-5a32-8962-02aa0f4ec738
+
+	measure 'MAPE KPI Label' = FORMAT ( [Demand Hours Scored], "#,0" ) & " hours scored"
+		displayFolder: 3 Accuracy
+		lineageTag: 025c404e-2ed3-5b72-a9f6-2ec3e044f032
+
+	/// Average of forecast minus actual. Positive means the forecast ran high.
+	measure 'Demand Bias Maya' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN AVERAGEX ( _t, 'Fact Hourly'[Demand Maya Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] )
+		formatString: +#,0;-#,0;0
+		displayFolder: 4 Where PACE misses
+		lineageTag: aef45254-ea70-5a51-bbf4-b27f2cf734f0
+
+	/// Average of PACE forecast minus actual. Positive means PACE ran high.
+	measure 'Demand Bias PACE' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN AVERAGEX ( _t, 'Fact Hourly'[Demand PACE Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] )
+		formatString: +#,0;-#,0;0
+		displayFolder: 4 Where PACE misses
+		lineageTag: 614f98ad-fd33-5ea8-9fd3-ce15d6cd7337
+
+	/// Share of scored hours where PACE missed by more than 500 MWh.
+	measure 'PACE Big Miss %' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN DIVIDE ( COUNTROWS ( FILTER ( _t, ABS ( 'Fact Hourly'[Demand PACE Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] ) > 500 ) ), COUNTROWS ( _t ) )
+		formatString: 0.0%
+		displayFolder: 4 Where PACE misses
+		lineageTag: cb83ac24-cf3c-5b90-9c81-ecec51e2fef6
+
+	/// Share of scored hours where Maya missed by more than 500 MWh.
+	measure 'Maya Big Miss %' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			RETURN DIVIDE ( COUNTROWS ( FILTER ( _t, ABS ( 'Fact Hourly'[Demand Maya Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] ) > 500 ) ), COUNTROWS ( _t ) )
+		formatString: 0.0%
+		displayFolder: 4 Where PACE misses
+		lineageTag: 874cd31d-2ac4-579d-b71a-7bc9eb160340
+
+	/// Of PACE's misses over 500 MWh, the share where PACE was too high.
+	measure 'PACE Big Miss Over-forecast %' =
+			VAR _t = FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) )
+			VAR _big = FILTER ( _t, ABS ( 'Fact Hourly'[Demand PACE Forecast (MWh)] - 'Fact Hourly'[Demand Actual (MWh)] ) > 500 )
+			RETURN DIVIDE ( COUNTROWS ( FILTER ( _big, 'Fact Hourly'[Demand PACE Forecast (MWh)] > 'Fact Hourly'[Demand Actual (MWh)] ) ), COUNTROWS ( _big ) )
+		formatString: 0%
+		displayFolder: 4 Where PACE misses
+		lineageTag: 16d54abd-36c4-56ca-84a7-28f9d5719292
+
+	measure 'Selected Series' = SELECTEDVALUE ( 'Series Selector'[Series], "Demand" )
+		displayFolder: 5 Forecast explorer
+		lineageTag: 2c9f0a85-f014-55cf-bba2-333b9f5b6424
+
+	measure 'Series Baseline Name' = SELECTEDVALUE ( 'Series Selector'[Baseline Name], "PACE day-ahead forecast" )
+		displayFolder: 5 Forecast explorer
+		lineageTag: c43c5a81-caa4-5bd2-b2d4-33584064f6e2
+
+	/// Value for the selected series; blank when any hour in the period is missing or the day is partial.
+	measure 'Series Actual' =
+			VAR _rows = COUNTROWS ( 'Fact Hourly' )
+			VAR _full = ISINSCOPE ( 'Dim Hour'[Hour] ) || _rows >= 23
+			RETURN IF ( _full, SWITCH ( [Selected Series],
+			    "Demand", IF ( COUNT ( 'Fact Hourly'[Demand Actual (MWh)] ) = _rows, [Demand Actual] ),
+			    "Renewable output", IF ( COUNT ( 'Fact Hourly'[Renewable Actual (MWh)] ) = _rows, [Renewable Actual] ),
+			    "Net load", IF ( COUNT ( 'Fact Hourly'[Net Load Actual (MWh)] ) = _rows, [Net Load Actual] ) ) )
+		formatString: #,0
+		displayFolder: 5 Forecast explorer
+		lineageTag: e8fd574a-2cb3-5ec7-b0be-dbdfe945f951
+
+	/// Value for the selected series; blank when any hour in the period is missing or the day is partial.
+	measure 'Series Maya' =
+			VAR _rows = COUNTROWS ( 'Fact Hourly' )
+			VAR _full = ISINSCOPE ( 'Dim Hour'[Hour] ) || _rows >= 23
+			RETURN IF ( _full, SWITCH ( [Selected Series],
+			    "Demand", IF ( COUNT ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) = _rows, [Demand Maya Forecast] ),
+			    "Renewable output", IF ( COUNT ( 'Fact Hourly'[Renewable Maya Forecast (MWh)] ) = _rows, [Renewable Maya Forecast] ),
+			    "Net load", IF ( COUNT ( 'Fact Hourly'[Net Load Maya Forecast (MWh)] ) = _rows, [Net Load Maya Forecast] ) ) )
+		formatString: #,0
+		displayFolder: 5 Forecast explorer
+		lineageTag: 75d9997a-9028-511f-b6e0-8b86d3307cc0
+
+	/// Value for the selected series; blank when any hour in the period is missing or the day is partial.
+	measure 'Series Baseline' =
+			VAR _rows = COUNTROWS ( 'Fact Hourly' )
+			VAR _full = ISINSCOPE ( 'Dim Hour'[Hour] ) || _rows >= 23
+			RETURN IF ( _full, SWITCH ( [Selected Series],
+			    "Demand", IF ( COUNT ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) = _rows, [Demand PACE Forecast] ),
+			    "Renewable output", IF ( COUNT ( 'Fact Hourly'[Renewable Persistence (MWh)] ) = _rows, [Renewable Persistence] ),
+			    "Net load", IF ( COUNT ( 'Fact Hourly'[Net Load Baseline (MWh)] ) = _rows, [Net Load Baseline] ) ) )
+		formatString: #,0
+		displayFolder: 5 Forecast explorer
+		lineageTag: 860e4309-cc41-5b17-a99e-dcffa325a0de
+
+	measure 'Series MAE Maya' = SWITCH ( [Selected Series], "Demand", [Demand MAE Maya], "Renewable output", [Renewable MAE Maya], "Net load", [Net Load MAE Maya] )
+		formatString: #,0.0
+		displayFolder: 5 Forecast explorer
+		lineageTag: 7a31f0cb-cc13-58be-bd4c-19f11c10b006
+
+	measure 'Series MAE Baseline' = SWITCH ( [Selected Series], "Demand", [Demand MAE PACE], "Renewable output", [Renewable MAE Persistence], "Net load", [Net Load MAE Baseline] )
+		formatString: #,0.0
+		displayFolder: 5 Forecast explorer
+		lineageTag: e79093dd-4406-5868-8b4f-d0cc18b9dde6
+
+	measure 'Series MAE Improvement %' = DIVIDE ( [Series MAE Baseline] - [Series MAE Maya], [Series MAE Baseline] )
+		formatString: 0.0%
+		displayFolder: 5 Forecast explorer
+		lineageTag: df865f02-ff97-57fc-ab80-ab549def8e32
+
+	measure 'Series Chart Title' = [Selected Series] & ": actual vs Maya vs " & [Series Baseline Name] & " (MWh)"
+		displayFolder: 5 Forecast explorer
+		lineageTag: 418b37c1-7e35-5ab5-ae41-1a4804b5bb7e
+
+	measure 'Series Hours Label' = FORMAT ( [Series Hours Scored], "#,0" ) & " hours scored"
+		displayFolder: 5 Forecast explorer
+		lineageTag: 3b32bc5c-1dd8-58ed-9a89-aa9bc9cd50b2
+
+	measure 'Added Solar MW Value' = SELECTEDVALUE ( 'Added Solar'[Added Solar MW], 500 )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: 2e645b55-6180-50f3-8f9d-7e810b2ae7c8
+
+	/// Average hourly demand over the selected hours.
+	measure 'Avg Demand by Hour' = AVERAGEX ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Solar Actual (MWh)] ) ), 'Fact Hourly'[Demand Actual (MWh)] )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: a3c8d4a9-435a-5aac-b61f-93fb0f74f09d
+
+	measure 'Avg Net Load Today' = AVERAGEX ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Solar Actual (MWh)] ) ), 'Fact Hourly'[Net Load Actual (MWh)] )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: 04273d43-a6fe-5217-92be-b6ecda2f2834
+
+	/// Net load if the added capacity produced with the same hourly shape as today's 476.1 MW of Milford solar.
+	measure 'Avg Net Load With Added Solar' =
+			VAR _mw = [Added Solar MW Value]
+			RETURN AVERAGEX ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Solar Actual (MWh)] ) ), 'Fact Hourly'[Net Load Actual (MWh)] - 'Fact Hourly'[Solar Actual (MWh)] / 476.1 * _mw )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: bc8579b3-8a1b-5cfc-8f83-79cc498cf72e
+
+	measure 'Peak Net Load Today' = MAXX ( VALUES ( 'Dim Hour'[Hour] ), [Avg Net Load Today] )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: 91bd48f4-6d57-5bb7-be30-9ec4db595e6a
+
+	measure 'Peak Net Load With Added Solar' = MAXX ( VALUES ( 'Dim Hour'[Hour] ), [Avg Net Load With Added Solar] )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: 639d12f0-6da2-5c61-b2f7-1f925b385486
+
+	/// Lowest average hourly net load between 9 am and 4 pm local.
+	measure 'Midday Low Today' = MINX ( FILTER ( VALUES ( 'Dim Hour'[Hour] ), 'Dim Hour'[Hour] >= 9 && 'Dim Hour'[Hour] <= 16 ), [Avg Net Load Today] )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: ad7d36cb-4bd3-5a1a-ad7d-eccfc6d06ec8
+
+	measure 'Midday Low With Added Solar' = MINX ( FILTER ( VALUES ( 'Dim Hour'[Hour] ), 'Dim Hour'[Hour] >= 9 && 'Dim Hour'[Hour] <= 16 ), [Avg Net Load With Added Solar] )
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: 9864c7c4-bdd2-5b73-a2b6-e25d4befe03b
+
+	measure 'Ramp Today' = [Peak Net Load Today] - [Midday Low Today]
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: 877496e8-b406-5347-ae17-bce82cc7d8cd
+
+	measure 'Ramp With Added Solar' = [Peak Net Load With Added Solar] - [Midday Low With Added Solar]
+		formatString: #,0
+		displayFolder: 6 Added solar
+		lineageTag: c9e9b152-e9c9-5b53-b2fc-aed3371df689
+
+	measure 'Renewable Share Today' = AVERAGEX ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Solar Actual (MWh)] ) ), DIVIDE ( 'Fact Hourly'[Renewable Actual (MWh)], 'Fact Hourly'[Demand Actual (MWh)] ) )
+		formatString: 0.0%
+		displayFolder: 6 Added solar
+		lineageTag: 8e081ab5-ffcb-51aa-b89e-e950c2fb1fb4
+
+	measure 'Renewable Share With Added Solar' =
+			VAR _mw = [Added Solar MW Value]
+			RETURN AVERAGEX ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Solar Actual (MWh)] ) ), DIVIDE ( 'Fact Hourly'[Renewable Actual (MWh)] + 'Fact Hourly'[Solar Actual (MWh)] / 476.1 * _mw, 'Fact Hourly'[Demand Actual (MWh)] ) )
+		formatString: 0.0%
+		displayFolder: 6 Added solar
+		lineageTag: 618f2f09-06ed-52d0-8268-133f63d0a8bd
+
+	measure 'Peak Change Label' = FORMAT ( [Peak Net Load With Added Solar] - [Peak Net Load Today], "+#,0;-#,0;0" ) & " MWh vs today"
+		displayFolder: 6 Added solar
+		lineageTag: a46b6382-4129-53d0-a949-c33641d2f86d
+
+	measure 'Midday Change Label' = FORMAT ( [Midday Low With Added Solar] - [Midday Low Today], "+#,0;-#,0;0" ) & " MWh vs today"
+		displayFolder: 6 Added solar
+		lineageTag: b46752de-920a-580f-8564-09582c944da2
+
+	measure 'Ramp Change Label' = FORMAT ( [Ramp With Added Solar] - [Ramp Today], "+#,0;-#,0;0" ) & " MWh vs today"
+		displayFolder: 6 Added solar
+		lineageTag: 890e9e5f-dbe4-57b5-a1d8-3908a6c6b9ba
+
+	measure 'Share Change Label' = FORMAT ( ( [Renewable Share With Added Solar] - [Renewable Share Today] ) * 100, "+0.0;-0.0;0.0" ) & " pts vs today"
+		displayFolder: 6 Added solar
+		lineageTag: 8e93c1b5-d193-5de8-ad6a-7630dfef4c43
+
+	measure 'Selected Temperature Change' = SELECTEDVALUE ( 'What-If Scenarios'[Temperature Change (F)], 0 )
+		formatString: +0;-0;0
+		displayFolder: 7 What-if
+		lineageTag: 57edad45-252b-535f-98b2-a9bb4e3f7d15
+
+	measure 'Selected Sunshine' = SELECTEDVALUE ( 'What-If Scenarios'[Sunshine vs Forecast (%)], 100 )
+		formatString: 0
+		displayFolder: 7 What-if
+		lineageTag: fd52e6c7-f7d8-5c06-99b3-d189d391ae64
+
+	/// Production demand model rerun with the chosen temperature change and sunshine level.
+	measure 'Scenario Demand' =
+			VAR _t = [Selected Temperature Change]
+			VAR _s = [Selected Sunshine]
+			RETURN CALCULATE ( SUM ( 'What-If Scenarios'[Scenario Demand (MWh)] ), REMOVEFILTERS ( 'What-If Scenarios'[Temperature Change (F)], 'What-If Scenarios'[Sunshine vs Forecast (%)] ), 'What-If Scenarios'[Temperature Change (F)] = _t, 'What-If Scenarios'[Sunshine vs Forecast (%)] = _s )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: 32301e61-5e8d-5a02-8322-1fb53d0a9e8a
+
+	/// Production demand model with the ECMWF forecast weather unchanged.
+	measure 'Forecast Weather Demand' = CALCULATE ( SUM ( 'What-If Scenarios'[Scenario Demand (MWh)] ), REMOVEFILTERS ( 'What-If Scenarios'[Temperature Change (F)], 'What-If Scenarios'[Sunshine vs Forecast (%)] ), 'What-If Scenarios'[Temperature Change (F)] = 0, 'What-If Scenarios'[Sunshine vs Forecast (%)] = 100 )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: 04f75595-a2d5-574c-832d-47312f1f478e
+
+	measure 'Scenario Renewable' =
+			VAR _t = [Selected Temperature Change]
+			VAR _s = [Selected Sunshine]
+			RETURN CALCULATE ( SUM ( 'What-If Scenarios'[Scenario Renewable (MWh)] ), REMOVEFILTERS ( 'What-If Scenarios'[Temperature Change (F)], 'What-If Scenarios'[Sunshine vs Forecast (%)] ), 'What-If Scenarios'[Temperature Change (F)] = _t, 'What-If Scenarios'[Sunshine vs Forecast (%)] = _s )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: 08786586-4bef-579b-a7f7-36a90b11fb82
+
+	measure 'Forecast Weather Renewable' = CALCULATE ( SUM ( 'What-If Scenarios'[Scenario Renewable (MWh)] ), REMOVEFILTERS ( 'What-If Scenarios'[Temperature Change (F)], 'What-If Scenarios'[Sunshine vs Forecast (%)] ), 'What-If Scenarios'[Temperature Change (F)] = 0, 'What-If Scenarios'[Sunshine vs Forecast (%)] = 100 )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: fb359cda-98e7-5172-bf7a-6ade1fab8436
+
+	measure 'Scenario Peak Net Load' = MAXX ( VALUES ( 'Dim Hour'[Hour] ), [Scenario Demand] - [Scenario Renewable] )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: 9bc7a2a1-2522-56a2-b81f-e9daff056da3
+
+	measure 'Forecast Weather Peak Net Load' = MAXX ( VALUES ( 'Dim Hour'[Hour] ), [Forecast Weather Demand] - [Forecast Weather Renewable] )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: aaa0d5cc-7ca9-597d-a35b-067fabc91da5
+
+	measure 'Scenario Demand Change Label' = FORMAT ( [Scenario Demand] - [Forecast Weather Demand], "+#,0;-#,0;0" ) & " MWh vs forecast weather"
+		displayFolder: 7 What-if
+		lineageTag: b4ad3aca-adf6-57a2-902e-6954dffeaf92
+
+	measure 'Scenario Renewable Change Label' = FORMAT ( [Scenario Renewable] - [Forecast Weather Renewable], "+#,0;-#,0;0" ) & " MWh vs forecast weather"
+		displayFolder: 7 What-if
+		lineageTag: 753cfb68-b8d2-5700-9bc6-e8c8c89fa884
+
+	measure 'Scenario Peak Change Label' = FORMAT ( [Scenario Peak Net Load] - [Forecast Weather Peak Net Load], "+#,0;-#,0;0" ) & " MWh vs forecast weather"
+		displayFolder: 7 What-if
+		lineageTag: 4738bded-0c85-5c8c-8c2b-e2fae8527754
+
+	/// Used to limit the scenario day picker to days that have scenarios.
+	measure 'Scenario Rows' = COUNTROWS ( 'What-If Scenarios' )
+		formatString: #,0
+		isHidden
+		displayFolder: 7 What-if
+		lineageTag: a392612e-93b1-51b8-9e40-def73ac5f409
+
+	measure 'Scenario Day Label' =
+			VAR _d = SELECTEDVALUE ( 'Dim Date'[Date] )
+			RETURN IF ( ISBLANK ( _d ), "Pick one 2026 day", FORMAT ( _d, "dddd, mmm d, yyyy" ) )
+		displayFolder: 7 What-if
+		lineageTag: 62f54520-9dcc-5846-a71f-b6bdc577c511
+
+	/// Extra MAE when the input is scrambled (permutation importance).
+	measure 'Added Error' = SUM ( 'Feature Importance'[Added Error (MWh)] )
+		formatString: #,0.0
+		displayFolder: 8 Drivers
+		lineageTag: b85e805c-f249-5037-a481-b63379681a2a
+
+	measure 'Normal MAE' = MAX ( 'Feature Importance'[Normal MAE (MWh)] )
+		formatString: #,0.0
+		displayFolder: 8 Drivers
+		lineageTag: 24782954-6de7-5f44-bb00-46e6301a82dd
+
+	measure 'Driver Bar Color' =
+			VAR _r = RANKX ( ALLSELECTED ( 'Feature Importance'[Input] ), [Added Error], , DESC )
+			RETURN IF ( _r <= 2, "#2A78D6", "#B8B4A6" )
+		isHidden
+		displayFolder: 8 Drivers
+		lineageTag: 37504219-d29b-5269-b075-bf23a6bea118
+
+	measure 'Drivers Subtitle' = "Extra error (MWh) when each input is scrambled. Normal error: " & FORMAT ( [Normal MAE], "#,0.0" ) & " MWh."
+		displayFolder: 8 Drivers
+		lineageTag: 6a20ba82-43fb-580f-814f-b81cf096d737
+
+	measure 'Period Label' = SELECTEDVALUE ( 'Dim Period'[Period], "Both periods" )
+		displayFolder: 0 Labels
+		lineageTag: b07c7a09-c695-5bb9-bfd5-fdae38f17b7a
+
+	/// Actual demand, ignoring the evaluation period slicer (the what-if days are all in 2026).
+	measure 'Demand Actual (Any Period)' = CALCULATE ( [Demand Actual], REMOVEFILTERS ( 'Dim Period' ) )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: b59353b8-6987-5a2b-8709-14e6d6de9574
+
+	measure 'Demand PACE Forecast (Any Period)' = CALCULATE ( [Demand PACE Forecast], REMOVEFILTERS ( 'Dim Period' ) )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: 325beb53-6218-564d-98e4-18b469f916c1
+
+	measure 'Renewable Actual (Any Period)' = CALCULATE ( [Renewable Actual], REMOVEFILTERS ( 'Dim Period' ) )
+		formatString: #,0
+		displayFolder: 7 What-if
+		lineageTag: fb96a65e-66c7-5e10-991c-8b6af0cfb859
+
+	measure 'Series Hours Scored' = SWITCH ( [Selected Series], "Demand", COUNTROWS ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Demand Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Demand PACE Forecast (MWh)] ) ) ), "Renewable output", COUNTROWS ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Renewable Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Renewable Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Renewable Persistence (MWh)] ) ) ), "Net load", COUNTROWS ( FILTER ( 'Fact Hourly', NOT ISBLANK ( 'Fact Hourly'[Net Load Actual (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Net Load Maya Forecast (MWh)] ) && NOT ISBLANK ( 'Fact Hourly'[Net Load Baseline (MWh)] ) ) ) )
+		formatString: #,0
+		displayFolder: 5 Forecast explorer
+		lineageTag: 833d698f-b52c-556b-8324-7371d9b7b8b0
+
+	column Placeholder
+		dataType: int64
+		isHidden
+		lineageTag: ae686efb-111f-5b34-846f-66839f8c023c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Placeholder]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW ( "Placeholder", BLANK () )
+
+	annotation PBI_Id = ea2327c07d60570a82fcc1bd1bca6d5e
+

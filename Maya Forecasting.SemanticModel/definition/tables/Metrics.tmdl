@@ -1,0 +1,99 @@
+/// Accuracy by period and series from the Maya pipeline (final_metrics.csv).
+table Metrics
+	lineageTag: 04f68072-083d-580e-9635-8080e15013f0
+
+	column 'Period Code'
+		dataType: string
+		isHidden
+		lineageTag: f8a159a8-5e07-5d6e-ab63-1aed9b75a416
+		summarizeBy: none
+		sourceColumn: Period Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Series
+		dataType: string
+		lineageTag: 63572796-f835-5bc0-b976-3e8b42569387
+		summarizeBy: none
+		sourceColumn: Series
+		sortByColumn: 'Series Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Series Order'
+		dataType: int64
+		isHidden
+		lineageTag: 6e6a0a6c-1526-5f38-b316-8d21059fe358
+		summarizeBy: none
+		sourceColumn: Series Order
+
+		annotation SummarizationSetBy = Automatic
+
+	column Hours
+		dataType: int64
+		formatString: #,0
+		lineageTag: 60a58229-3889-5543-b2fa-067fa32707a3
+		summarizeBy: sum
+		sourceColumn: Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MAE (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 48416042-371a-5eed-a169-c09de0395afe
+		summarizeBy: sum
+		sourceColumn: MAE (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Baseline MAE (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 24fabf6d-7dc0-59dd-8761-989d75881c01
+		summarizeBy: sum
+		sourceColumn: Baseline MAE (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MAE Improvement %'
+		dataType: double
+		formatString: 0.0
+		lineageTag: 356bdcad-4832-58c3-a24c-9851946b3532
+		summarizeBy: sum
+		sourceColumn: MAE Improvement %
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'RMSE (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 5a9b73b6-aec3-56da-9881-73bc77aa8a28
+		summarizeBy: sum
+		sourceColumn: RMSE (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'MAPE %'
+		dataType: double
+		formatString: 0.00
+		lineageTag: 402b52aa-9a20-5d55-9697-77e4f701c403
+		summarizeBy: sum
+		sourceColumn: MAPE %
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Metrics = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "final_metrics.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"period", type text}, {"series", type text}, {"hours", Int64.Type}, {"MAE", type number}, {"baseline_MAE", type number}, {"MAE_improvement_pct", type number}, {"RMSE", type number}, {"MAPE_pct", type number}}, "en-US"),
+				    Kept = Table.SelectColumns(Typed, {"period", "series", "hours", "MAE", "baseline_MAE", "MAE_improvement_pct", "RMSE", "MAPE_pct"}),
+				    Labels = Table.ReplaceValue(Kept, each [series], each if [series] = "Demand" then "Demand (blend)" else if [series] = "Demand (GBM only)" then "Demand, GBM only" else if [series] = "Demand (LSTM only)" then "Demand, LSTM only" else if [series] = "Renewable" then "Renewable output" else [series], Replacer.ReplaceValue, {"series"}),
+				    Ordered = Table.AddColumn(Labels, "Series Order", each List.PositionOf({"Demand (blend)", "Demand, GBM only", "Demand, LSTM only", "Renewable output", "Net load"}, [series]) + 1, Int64.Type),
+				    Renamed = Table.RenameColumns(Ordered, {{"period", "Period Code"}, {"series", "Series"}, {"hours", "Hours"}, {"MAE", "MAE (MWh)"}, {"baseline_MAE", "Baseline MAE (MWh)"}, {"MAE_improvement_pct", "MAE Improvement %"}, {"RMSE", "RMSE (MWh)"}, {"MAPE_pct", "MAPE %"}})
+				in
+				    Renamed
+

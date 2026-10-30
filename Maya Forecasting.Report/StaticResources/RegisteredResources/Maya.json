@@ -1,0 +1,149 @@
+{
+  "name": "Maya",
+  "dataColors": [
+    "#2A78D6",
+    "#EB6834",
+    "#16150F",
+    "#0F8A6A",
+    "#8A877A",
+    "#D9A400",
+    "#7A4A06",
+    "#5B8DD6"
+  ],
+  "foreground": "#16150F",
+  "foregroundNeutralSecondary": "#55534A",
+  "foregroundNeutralTertiary": "#8A877A",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F7F6F2",
+  "backgroundNeutral": "#DED9CC",
+  "tableAccent": "#2A78D6",
+  "good": "#0A8F0A",
+  "bad": "#C0392B",
+  "neutral": "#D9A400",
+  "maximum": "#EB6834",
+  "center": "#F7F6F2",
+  "minimum": "#2A78D6",
+  "textClasses": {
+    "callout": {
+      "fontSize": 22,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#16150F"
+    },
+    "title": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#16150F"
+    },
+    "header": {
+      "fontSize": 11,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#16150F"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#55534A"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E3DFD5"
+              }
+            },
+            "radius": 8
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#16150F"
+              }
+            },
+            "fontSize": 12,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "subTitle": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#55534A"
+              }
+            },
+            "fontSize": 9,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "padding": [
+          {
+            "top": 8,
+            "bottom": 8,
+            "left": 12,
+            "right": 12
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F7F6F2"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F7F6F2"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "valueAxis": [
+          {
+            "gridlineColor": {
+              "solid": {
+                "color": "#ECE9E1"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

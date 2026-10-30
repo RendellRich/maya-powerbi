@@ -1,0 +1,48 @@
+/// Disconnected table that drives the Forecast explorer series picker.
+table 'Series Selector'
+	lineageTag: aee80093-d09a-5e58-894a-2e5c04de24ca
+
+	column Series
+		dataType: string
+		lineageTag: 83303495-c538-5315-a5ef-b3428c0a0c17
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Series]
+		sortByColumn: 'Series Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Series Order'
+		dataType: int64
+		isHidden
+		lineageTag: 27eb6c7a-8247-5acd-9b00-181b9b0f73c0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Series Order]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Baseline Name'
+		dataType: string
+		isHidden
+		lineageTag: 7362fdbe-a569-5e0f-b175-596940c68725
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Baseline Name]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Series Selector' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Series", STRING,
+				    "Series Order", INTEGER,
+				    "Baseline Name", STRING,
+				    {
+				        { "Demand", 1, "PACE day-ahead forecast" },
+				        { "Renewable output", 2, "Persistence (same hour yesterday)" },
+				        { "Net load", 3, "PACE forecast minus persistence" }
+				    }
+				)
+

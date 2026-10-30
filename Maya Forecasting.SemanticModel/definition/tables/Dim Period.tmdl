@@ -1,0 +1,47 @@
+/// The two evaluation periods.
+table 'Dim Period'
+	lineageTag: 284a7e28-3a27-53e9-84a9-947e12f6bd7f
+
+	column 'Period Code'
+		dataType: string
+		isHidden
+		lineageTag: 16ff6eef-b9ff-59b5-8316-a2bddbe0f003
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period Code]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Period
+		dataType: string
+		lineageTag: 481a0a25-d27e-5993-8706-4711170fd268
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period]
+		sortByColumn: 'Period Order'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Period Order'
+		dataType: int64
+		isHidden
+		lineageTag: 52b830c4-0d1e-5552-b2ad-f07e1b97f93b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Period Order]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Period' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Period Code", STRING,
+				    "Period", STRING,
+				    "Period Order", INTEGER,
+				    {
+				        { "A backtest 2024-25", "2024-25 backtest", 1 },
+				        { "B forward test 2026", "2026 forward test", 2 }
+				    }
+				)
+

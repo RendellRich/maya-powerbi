@@ -1,0 +1,18 @@
+/// What-if parameter: extra Milford-area solar capacity in MW AC.
+table 'Added Solar'
+	lineageTag: d3047369-3b4f-5723-b9b7-b07dde3a2275
+
+	column 'Added Solar MW'
+		dataType: int64
+		formatString: #,0
+		lineageTag: 970551d0-c479-52ba-b507-839d4b84543b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Added Solar MW]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Added Solar' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 0, 3000, 50 ), "Added Solar MW", [Value] )
+

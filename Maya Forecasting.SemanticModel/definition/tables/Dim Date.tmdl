@@ -1,0 +1,112 @@
+/// Calendar of local (Mountain time) dates covering the data.
+table 'Dim Date'
+	lineageTag: 7883fc3a-27cb-565d-bebf-8713237157d5
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: mmm d, yyyy
+		lineageTag: b550d5ce-5797-5a5c-966f-50b3689bafb1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 741ce77b-e86d-50c3-9c18-6fc58da3b9c5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month No'
+		dataType: int64
+		isHidden
+		lineageTag: 379a2f4b-94d5-5c8a-9735-97324a0a9503
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month No]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: 8347b0d9-b778-5e87-9f52-c861a944d9ed
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month]
+		sortByColumn: 'Month No'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: 55fe28a5-8496-58be-aa7a-185d2e724d34
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month]
+		sortByColumn: 'Year Month Key'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month Key'
+		dataType: int64
+		isHidden
+		lineageTag: 3160a4ff-98d6-5d5c-a475-cad609235960
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month Key]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Weekday No'
+		dataType: int64
+		isHidden
+		lineageTag: db25c806-a427-5c73-afa5-2c4ef6be12bf
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Weekday No]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weekday
+		dataType: string
+		lineageTag: 50451f83-914a-52c2-9e33-48f3ed0eca97
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Weekday]
+		sortByColumn: 'Weekday No'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		dataType: string
+		lineageTag: 34e3b81d-1cd8-52c4-91e7-b42e07739e20
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Is Weekend]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Date' = calculated
+		mode: import
+		source =
+				VAR _base = CALENDAR ( DATE ( 2024, 1, 1 ), DATE ( 2026, 12, 31 ) )
+				RETURN
+				    ADDCOLUMNS (
+				        _base,
+				        "Year", YEAR ( [Date] ),
+				        "Month No", MONTH ( [Date] ),
+				        "Month", FORMAT ( [Date], "mmm" ),
+				        "Year Month", FORMAT ( [Date], "mmm yyyy" ),
+				        "Year Month Key", YEAR ( [Date] ) * 100 + MONTH ( [Date] ),
+				        "Weekday No", WEEKDAY ( [Date], 2 ),
+				        "Weekday", FORMAT ( [Date], "ddd" ),
+				        "Is Weekend", IF ( WEEKDAY ( [Date], 2 ) >= 6, "Weekend", "Weekday" )
+				    )
+

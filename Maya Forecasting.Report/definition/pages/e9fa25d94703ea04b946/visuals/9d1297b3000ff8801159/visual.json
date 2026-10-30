@@ -1,0 +1,59 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "9d1297b3000ff8801159",
+  "position": {
+    "x": 640,
+    "y": 492,
+    "z": 9,
+    "height": 204,
+    "width": 192,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "How it works",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10pt",
+                      "color": "#16150F"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Demand blends gradient boosting and an LSTM. Renewable output uses gradient boosting on forecast sunlight. Net load = demand minus Milford renewables.",
+                    "textStyle": {
+                      "fontSize": "8pt",
+                      "color": "#55534A"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Data: EIA-930, EIA-923, Copernicus ERA5 and CAMS, ECMWF (Open-Meteo), EPA eGRID.",
+                    "textStyle": {
+                      "fontSize": "8pt",
+                      "color": "#55534A"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

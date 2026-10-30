@@ -1,0 +1,33 @@
+/// Hour of the local day, 0 to 23.
+table 'Dim Hour'
+	lineageTag: c07c4826-020c-5ac8-9975-302f56e2a14a
+
+	column Hour
+		dataType: int64
+		formatString: 0
+		lineageTag: f8ce357e-5485-5838-8daf-49e9356ff150
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Hour]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Hour Label'
+		dataType: string
+		lineageTag: cef444e0-722b-5d74-8a30-b35f1e5feca6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Hour Label]
+		sortByColumn: Hour
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dim Hour' = calculated
+		mode: import
+		source =
+				SELECTCOLUMNS (
+				    GENERATESERIES ( 0, 23, 1 ),
+				    "Hour", [Value],
+				    "Hour Label", FORMAT ( TIME ( [Value], 0, 0 ), "h AM/PM" )
+				)
+

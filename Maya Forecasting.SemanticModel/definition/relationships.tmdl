@@ -1,0 +1,24 @@
+relationship 0ee82afb-b6e9-5e64-820a-5812236ca5bd
+	fromColumn: 'Fact Hourly'.'Local Date'
+	toColumn: 'Dim Date'.Date
+
+relationship fa965aa1-a1ef-5d00-93de-d82bdf277d9e
+	fromColumn: 'Fact Hourly'.'Local Hour'
+	toColumn: 'Dim Hour'.Hour
+
+relationship 61bbd04c-61c3-50e9-8ab7-9286c80ea5ee
+	fromColumn: 'Fact Hourly'.'Period Code'
+	toColumn: 'Dim Period'.'Period Code'
+
+relationship eca38211-7f58-5453-b848-60b6973c7774
+	fromColumn: Metrics.'Period Code'
+	toColumn: 'Dim Period'.'Period Code'
+
+relationship fc5250ba-b6a6-5a40-a6d7-21588221139e
+	fromColumn: 'What-If Scenarios'.'Local Date'
+	toColumn: 'Dim Date'.Date
+
+relationship 960df535-ac36-51dd-b5f6-072f353953ab
+	fromColumn: 'What-If Scenarios'.'Local Hour'
+	toColumn: 'Dim Hour'.Hour
+

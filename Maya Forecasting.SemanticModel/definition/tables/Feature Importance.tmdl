@@ -1,0 +1,49 @@
+/// Permutation importance of the production gradient boosting models, Jan to early Sep 2026 (feature_importance.csv).
+table 'Feature Importance'
+	lineageTag: 0df18dc9-a8cf-5cb6-a6d9-fc32533fa297
+
+	column Model
+		dataType: string
+		lineageTag: 3ce32074-5a56-5192-be87-5b20f203889b
+		summarizeBy: none
+		sourceColumn: Model
+
+		annotation SummarizationSetBy = Automatic
+
+	column Input
+		dataType: string
+		lineageTag: ad3a0657-683e-59fd-8cfd-ad5c72ed798d
+		summarizeBy: none
+		sourceColumn: Input
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Added Error (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 91a475e2-8b9a-5971-acd3-9eebf922c1ec
+		summarizeBy: sum
+		sourceColumn: Added Error (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Normal MAE (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 4ff52c91-4eb7-58ce-81f3-60d9f4a449db
+		summarizeBy: none
+		sourceColumn: Normal MAE (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Feature Importance' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "feature_importance.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"model", type text}, {"input", type text}, {"added_error_mwh", type number}, {"normal_mae_mwh", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"model", "Model"}, {"input", "Input"}, {"added_error_mwh", "Added Error (MWh)"}, {"normal_mae_mwh", "Normal MAE (MWh)"}})
+				in
+				    Renamed
+

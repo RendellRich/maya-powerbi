@@ -1,0 +1,208 @@
+/// One row per hour, Feb 4 2024 to Sep 1 2026 (UTC). Actuals, Maya day-ahead forecasts and baselines. Local time is Mountain time with daylight saving.
+table 'Fact Hourly'
+	lineageTag: 7ea17432-a5fd-5efc-8080-2c50738cf3f1
+
+	column 'Timestamp UTC'
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		lineageTag: b0f5d06a-c6db-54a6-8918-668d5b539a9c
+		summarizeBy: none
+		sourceColumn: Timestamp UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Period Code'
+		dataType: string
+		isHidden
+		lineageTag: 361bc25f-4f19-5003-87eb-c89680bf3fcb
+		summarizeBy: none
+		sourceColumn: Period Code
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Demand Actual (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 421dbf7e-54b1-51c5-aace-9498095c1ffd
+		summarizeBy: none
+		sourceColumn: Demand Actual (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Demand PACE Forecast (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: eccc8365-d25a-5371-bb7c-b0de7c49ae65
+		summarizeBy: none
+		sourceColumn: Demand PACE Forecast (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Demand Maya Forecast (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: d9bbf69a-815e-5d88-ba54-0c52454d11ab
+		summarizeBy: none
+		sourceColumn: Demand Maya Forecast (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Demand GBM Forecast (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 27a567ec-6631-5bdd-83c1-b7da1cdc15e4
+		summarizeBy: none
+		sourceColumn: Demand GBM Forecast (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Demand LSTM Forecast (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: e7c39f5e-9c50-54bc-a5f4-ffb93b7b8f87
+		summarizeBy: none
+		sourceColumn: Demand LSTM Forecast (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Renewable Actual (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 7164cb95-c28d-58e2-b9c2-6caa1e9c6a50
+		summarizeBy: none
+		sourceColumn: Renewable Actual (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Renewable Maya Forecast (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 43f0740e-81d9-539c-b9ea-f4a6949418db
+		summarizeBy: none
+		sourceColumn: Renewable Maya Forecast (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Renewable Persistence (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 32bc5334-0c83-5e83-95e6-c03cf7181ec0
+		summarizeBy: none
+		sourceColumn: Renewable Persistence (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Solar Actual (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 4964a939-6722-536e-aadf-c07fea0e6cb3
+		summarizeBy: none
+		sourceColumn: Solar Actual (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Net Load Actual (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: dabd1350-5db8-5cff-80d5-22b9cf947a52
+		summarizeBy: none
+		sourceColumn: Net Load Actual (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Net Load Maya Forecast (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 9802cedb-4a07-5819-961a-6037dc1452c4
+		summarizeBy: none
+		sourceColumn: Net Load Maya Forecast (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Net Load Baseline (MWh)'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: 46d3b788-ab83-5ef9-9c52-fca5a2ff943c
+		summarizeBy: none
+		sourceColumn: Net Load Baseline (MWh)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Renewable Share Actual (%)'
+		dataType: double
+		formatString: 0.00
+		lineageTag: ceff0654-3174-550f-88c5-a96a1a53027e
+		summarizeBy: none
+		sourceColumn: Renewable Share Actual (%)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Renewable Share Forecast (%)'
+		dataType: double
+		formatString: 0.00
+		lineageTag: 358cc906-fcff-56e8-b857-e01ade8e018c
+		summarizeBy: none
+		sourceColumn: Renewable Share Forecast (%)
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Renewable Target Calibration'
+		dataType: string
+		lineageTag: d956e94b-8d2d-57a4-9a4e-8e9ad8049c89
+		summarizeBy: none
+		sourceColumn: Renewable Target Calibration
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Local DateTime'
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:nn
+		lineageTag: 36cd0c14-14d4-5e26-a7c8-ce5b524538ec
+		summarizeBy: none
+		sourceColumn: Local DateTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Local Date'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 894bfc42-8260-5a67-ae0f-d6c767b88c5c
+		summarizeBy: none
+		sourceColumn: Local Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Local Hour'
+		dataType: int64
+		isHidden
+		lineageTag: 6422155f-89b6-539f-9c9b-20bb7f0c27b2
+		summarizeBy: none
+		sourceColumn: Local Hour
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fact Hourly' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "final_forecasts_hourly.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"timestamp_utc", type datetime}, {"period", type text}, {"Demand Actual (MWh)", type number}, {"Demand PACE Forecast (MWh)", type number}, {"Demand Forecast (MWh)", type number}, {"Demand Forecast GBM (MWh)", type number}, {"Demand Forecast LSTM (MWh)", type number}, {"Renewable Actual (MWh)", type number}, {"Renewable Forecast (MWh)", type number}, {"Renewable Persistence (MWh)", type number}, {"Solar Actual (MWh)", type number}, {"Net Load Actual (MWh)", type number}, {"Net Load Forecast (MWh)", type number}, {"Net Load Baseline (MWh)", type number}, {"Renewable Share Actual (%)", type number}, {"Renewable Share Forecast (%)", type number}, {"Renewable Target Calibration", type text}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"timestamp_utc", "Timestamp UTC"}, {"period", "Period Code"}, {"Demand Forecast (MWh)", "Demand Maya Forecast (MWh)"}, {"Demand Forecast GBM (MWh)", "Demand GBM Forecast (MWh)"}, {"Demand Forecast LSTM (MWh)", "Demand LSTM Forecast (MWh)"}, {"Renewable Forecast (MWh)", "Renewable Maya Forecast (MWh)"}, {"Net Load Forecast (MWh)", "Net Load Maya Forecast (MWh)"}}),
+				    ToLocal = (utc as datetime) as datetime =>
+				        let
+				            y = Date.Year(utc),
+				            mar1 = #date(y, 3, 1),
+				            nov1 = #date(y, 11, 1),
+				            dstStart = DateTime.From(Date.AddDays(mar1, Number.Mod(7 - Date.DayOfWeek(mar1, Day.Sunday), 7) + 7)) + #duration(0, 9, 0, 0),
+				            dstEnd = DateTime.From(Date.AddDays(nov1, Number.Mod(7 - Date.DayOfWeek(nov1, Day.Sunday), 7))) + #duration(0, 8, 0, 0),
+				            offset = if utc >= dstStart and utc < dstEnd then -6 else -7
+				        in
+				            utc + #duration(0, offset, 0, 0),
+				    AddLocal = Table.AddColumn(Renamed, "Local DateTime", each ToLocal([Timestamp UTC]), type datetime),
+				    AddDate = Table.AddColumn(AddLocal, "Local Date", each DateTime.Date([Local DateTime]), type date),
+				    AddHour = Table.AddColumn(AddDate, "Local Hour", each Time.Hour([Local DateTime]), Int64.Type)
+				in
+				    AddHour
+
